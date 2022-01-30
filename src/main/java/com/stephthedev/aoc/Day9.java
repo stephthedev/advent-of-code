@@ -39,17 +39,18 @@ public class Day9 {
                 if (((above == -1) || above > curr) && ((right == -1) || right > curr) &&
                         ((below == -1) || below > curr) && ((left == -1) || left > curr)) {
                     risk += (1 + curr);
+                    lowPoints.add(new int[]{i, j});
                 }
             }
         }
 
         Part1Result result = new Part1Result();
-        result.lowPoints = null;
+        result.lowPoints = lowPoints;
         result.risk = risk;
         return result;
     }
 
-    long findThreeLargestBasins() {
+    long findThreeLargestBasins(List<int[]> lowPoints) {
         return -1;
     }
 
