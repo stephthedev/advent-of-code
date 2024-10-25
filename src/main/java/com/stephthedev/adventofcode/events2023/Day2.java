@@ -64,12 +64,34 @@ public class Day2 {
         Integer sum = results.stream()
                 .filter(result -> result.subsets.stream().allMatch(subset -> subset.redCount <= bagLimitationMap.get("red") &&
                         subset.blueCount <= bagLimitationMap.get("blue") &&
-                        subset.greenCount <= bagLimitationMap.get("green"))
-                )
+                        subset.greenCount <= bagLimitationMap.get("green")))
                 .map(GameResult::gameId)
                 .reduce(0, Integer::sum);
 
-        System.out.println("Game Id Sum: " + sum);
+        int cubePower = results.stream()
+                .map(GameResult::subsets)
+                .map(subsets -> {
+                    int maxBlue = subsets.stream()
+                            .mapToInt(Subset::blueCount)
+                            .max()
+                            .orElseThrow();
+
+                    int maxRed = subsets.stream()
+                            .mapToInt(Subset::redCount)
+                            .max()
+                            .orElseThrow();
+
+                    int maxGreen = subsets.stream()
+                            .mapToInt(Subset::greenCount)
+                            .max()
+                            .orElseThrow();
+
+                    return maxBlue * maxRed * maxGreen;
+                })
+                .reduce(0, Integer::sum);
+
+        System.out.println("Total Game Ids: " + sum);
+        System.out.println("Total Cube Power: " + cubePower);
     }
 
     private record Subset(int redCount, int greenCount, int blueCount) {
