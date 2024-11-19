@@ -6,8 +6,10 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
+
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Day3 {
 
@@ -15,48 +17,33 @@ public class Day3 {
 
     private final Pattern SYMBOL_PATTERN = Pattern.compile("([^\\d\\.]+)");
 
-    public int sumRelevantPartNumbers(List<LineResult> lineResults) {
-        int sum = 0;
-        for (int i=0; i<lineResults.size(); i++) {
-            LineResult currentLine = lineResults.get(i);
-            LineResult previousLine = (i - 1 > 0) ? lineResults.get(i - 1) : null;
-            LineResult nextLine = (i + 1 < lineResults.size()) ? lineResults.get(i + 1) : null;
-
-            List<Integer> matchingNumbers = currentLine.indexNumberMap.keySet().stream()
-                    .filter(startingIndexOfNumber -> {
-                        int leftIndexToCheck = Math.max(startingIndexOfNumber - 1, 0);
-                        int rightIndexToCheck = Math.min(startingIndexOfNumber + currentLine.indexNumberMap.get(startingIndexOfNumber).length(), 141);
-
-                        if (currentLine.hasSymbolExactlyAt(leftIndexToCheck, rightIndexToCheck)) {
-                            //Check first for numbers adjacent to symbols on the current line
-                            return true;
-                        } else //Next, check for numbers adjacent to symbols on the previous line
-                            if (previousLine != null && previousLine.hasSymbolInRange(leftIndexToCheck, rightIndexToCheck)) {
-                            //Next, check for numbers adjacent to symbols on the previous line
-                            return true;
-                        } else return nextLine != null && nextLine.hasSymbolInRange(leftIndexToCheck, rightIndexToCheck);
-                    })
-                    .map(currentLine.indexNumberMap::get)
-                    .map(Integer::parseInt)
-                    .toList();
-
-            sum += matchingNumbers.stream().reduce(0, Integer::sum);
-        }
-
-        return sum;
-    }
-
     public List<LineResult> precompute(String inputFile) throws IOException {
         List<LineResult> lineResults = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/" + inputFile)))) {
             String line = reader.readLine();
-
             while (line != null) {
-                Map<Integer, String> indexNumberMap = NUMBER_PATTERN.matcher(line)
+                Map<Integer, Set<Integer>> partNumberIndicesMap = NUMBER_PATTERN.matcher(line)
                         .results()
                         .collect(Collectors.toMap(
-                                MatchResult::start,
-                                MatchResult::group
+                            MatchResult::start,
+                            matchResult -> Integer.parseInt(matchResult.group())
+                        ))
+                        .entrySet()
+                        .stream()
+                        .collect(Collectors.toMap(
+                                Map.Entry::getValue,
+                                entry -> {
+                                    Set<Integer> indices = new HashSet<>();
+                                    int partNumberLength = Integer.toString(entry.getValue()).length();
+                                    for (int i=0; i<partNumberLength; i++) {
+                                        indices.add(entry.getKey() + i);
+                                    }
+                                    return indices;
+                                },
+                                (first, second) -> {
+                                    first.addAll(second);
+                                    return first;
+                                }
                         ));
 
                 Map<Integer, String> indexSymbolMap = SYMBOL_PATTERN.matcher(line)
@@ -66,7 +53,11 @@ public class Day3 {
                                 MatchResult::group
                         ));
 
-                lineResults.add(new LineResult(indexNumberMap, indexSymbolMap));
+                lineResults.add(new LineResult(
+                        line.length(),
+                        partNumberIndicesMap,
+                        indexSymbolMap
+                ));
 
                 line = reader.readLine();
             }
@@ -75,16 +66,92 @@ public class Day3 {
         return lineResults;
     }
 
-    record LineResult(Map<Integer, String> indexNumberMap, Map<Integer, String> indexSymbolMap) {
+    public Result sumRelevantPartNumbers(List<LineResult> lineResults) {
+        int totalSumOfPartNumbers = 0;
+        int totalSumOfGears = 0;
+        for (int i=0; i<lineResults.size(); i++) {
+            LineResult currentLine = lineResults.get(i);
+            LineResult previousLine = (i - 1 >= 0) ? lineResults.get(i - 1) : null;
+            LineResult nextLine = (i + 1 < lineResults.size()) ? lineResults.get(i + 1) : null;
 
-        public boolean hasSymbolExactlyAt(int leftIndex, int rightIndex) {
-            return indexSymbolMap.containsKey(leftIndex) || indexSymbolMap.containsKey(rightIndex);
+            totalSumOfPartNumbers += findSumOfValidPartNumbersForLine(
+                Optional.ofNullable(previousLine),
+                currentLine,
+                Optional.ofNullable(nextLine)
+            );
+
+            totalSumOfGears += findSumOfValidGears(
+                Optional.ofNullable(previousLine),
+                currentLine,
+                Optional.ofNullable(nextLine)
+            );
         }
 
-        public boolean hasSymbolInRange(int leftIndex, int rightIndex) {
-            return IntStream.rangeClosed(leftIndex, rightIndex)
+        return new Result(
+                totalSumOfPartNumbers,
+                totalSumOfGears
+        );
+    }
+
+    private int findSumOfValidGears(Optional<LineResult> previousLine,
+                                   LineResult currentLine,
+                                   Optional<LineResult> nextLine) {
+        return currentLine.indexSymbolMap.entrySet().stream()
+            .filter(entrySet -> entrySet.getValue().equals("*"))
+            .map(Map.Entry::getKey)
+            .map(gearIndex -> Stream.of(
+                        previousLine
+                                .map(lineResult -> lineResult.findPartNumberInRange(gearIndex))
+                                .orElse(null),
+                        currentLine.findPartNumberInRange(gearIndex),
+                        nextLine
+                                .map(lineResult -> lineResult.findPartNumberInRange(gearIndex))
+                                .orElse(null)
+                    )
+                    .filter(Objects::nonNull)
+                    .flatMap(Collection::stream)
+                    .toList())
+            .distinct()
+            .filter(numbersInRange -> numbersInRange.size() == 2)
+            .map(matches -> matches.stream().reduce(1, (a, b) -> a * b))
+            .reduce(0, Integer::sum);
+    }
+
+    private int findSumOfValidPartNumbersForLine(Optional<LineResult> previousLine, LineResult currentLine, Optional<LineResult> nextLine) {
+        return currentLine.partIndicesMap.entrySet().stream()
+                .filter(entry -> entry.getValue().stream().anyMatch(indexNumber -> {
+                    if (currentLine.hasSymbolInRange(indexNumber)) {
+                        //Check first for numbers adjacent to symbols on the current line
+                        return true;
+                    } else if (previousLine.map(lineResult -> lineResult.hasSymbolInRange(indexNumber)).orElse(false)) {
+                        //Next, check for numbers adjacent to symbols on the previous line
+                        return true;
+                    } else {
+                        return nextLine.map(lineResult -> lineResult.hasSymbolInRange(indexNumber)).orElse(false);
+                    }
+                }))
+                .map(Map.Entry::getKey)
+                .reduce(0, Integer::sum);
+    }
+
+    record LineResult(int lineSize,
+                      Map<Integer, Set<Integer>> partIndicesMap,
+                      Map<Integer, String> indexSymbolMap) {
+
+        public boolean hasSymbolInRange(int index) {
+            return IntStream.rangeClosed(index - 1, index + 1)
                     .anyMatch(indexSymbolMap::containsKey);
         }
+
+        public Collection<Integer> findPartNumberInRange(int index) {
+            return partIndicesMap.entrySet().stream()
+                    .filter(entrySet -> entrySet.getValue().contains(index - 1) || entrySet.getValue().contains(index + 1))
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toSet());
+        }
+    }
+
+    record Result(int part1, int part2) {
     }
 
     public static void main(String[] args) throws IOException {
@@ -92,6 +159,10 @@ public class Day3 {
         List<LineResult> lineResults = day3.precompute(
                 "day3_input.txt"
         );
-        System.out.println("SUM: " + day3.sumRelevantPartNumbers(lineResults));
+        Result result = day3.sumRelevantPartNumbers(lineResults);
+        //Scratch: 4361, 467835
+        //Day 3: 520019, (not: 75517476, 75518496)
+        System.out.println("SUM part numbers: " + result.part1);
+        System.out.println("SUM gears: " + result.part2);
     }
 }
