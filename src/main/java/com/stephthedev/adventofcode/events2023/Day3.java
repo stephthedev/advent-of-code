@@ -100,18 +100,17 @@ public class Day3 {
             .filter(entrySet -> entrySet.getValue().equals("*"))
             .map(Map.Entry::getKey)
             .map(gearIndex -> Stream.of(
-                        previousLine
-                                .map(lineResult -> lineResult.findPartNumberInRange(gearIndex))
-                                .orElse(null),
-                        currentLine.findPartNumberInRange(gearIndex),
-                        nextLine
-                                .map(lineResult -> lineResult.findPartNumberInRange(gearIndex))
-                                .orElse(null)
-                    )
-                    .filter(Objects::nonNull)
-                    .flatMap(Collection::stream)
-                    .toList())
-            .distinct()
+                                    previousLine
+                                            .map(lineResult -> lineResult.findPartNumberInRange(gearIndex))
+                                            .orElse(null),
+                                    currentLine.findPartNumberInRange(gearIndex),
+                                    nextLine
+                                            .map(lineResult -> lineResult.findPartNumberInRange(gearIndex))
+                                            .orElse(null)
+                            )
+                            .filter(Objects::nonNull)
+                            .flatMap(Collection::stream)
+                            .collect(Collectors.toSet()))
             .filter(numbersInRange -> numbersInRange.size() == 2)
             .map(matches -> matches.stream().reduce(1, (a, b) -> a * b))
             .reduce(0, Integer::sum);
@@ -145,7 +144,8 @@ public class Day3 {
 
         public Collection<Integer> findPartNumberInRange(int index) {
             return partIndicesMap.entrySet().stream()
-                    .filter(entrySet -> entrySet.getValue().contains(index - 1) || entrySet.getValue().contains(index + 1))
+                    .filter(entrySet -> IntStream.rangeClosed(index - 1, index + 1)
+                            .anyMatch(computedIndex -> entrySet.getValue().contains(computedIndex)))
                     .map(Map.Entry::getKey)
                     .collect(Collectors.toSet());
         }
@@ -161,7 +161,7 @@ public class Day3 {
         );
         Result result = day3.sumRelevantPartNumbers(lineResults);
         //Scratch: 4361, 467835
-        //Day 3: 520019, (not: 75517476, 75518496)
+        //Day 3: 520019, 75519888
         System.out.println("SUM part numbers: " + result.part1);
         System.out.println("SUM gears: " + result.part2);
     }
