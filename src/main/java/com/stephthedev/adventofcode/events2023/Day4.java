@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Day4 {
 
@@ -36,25 +37,58 @@ public class Day4 {
         return results;
     }
 
-    public int calculateMatchingNumbersSum(List<CardResult> cardResults) {
-        return cardResults.stream()
-                .map(cardResult -> {
-                     List<Integer> matchingNumbers = cardResult.actualNumbers
-                            .stream()
-                            .filter(cardResult.winningNumbers::contains)
-                             .toList();
-                     int sum = 0;
-                     for (int i=0; i<matchingNumbers.size(); i++) {
-                         if (i == 0) {
-                             sum += 1;
-                         } else {
-                             sum = sum * 2;
-                         }
-                     }
+    public int calculateSumOfTotalNumbersMatched(Map<Integer, Integer> winningNumbersByCardMap) {
+        return winningNumbersByCardMap.values().stream()
+                .map(totalWinningNumbers -> {
+                    int sum = 0;
+                    for (int i=0; i<totalWinningNumbers; i++) {
+                        if (i == 0) {
+                            sum += 1;
+                        } else {
+                            sum = sum * 2;
+                        }
+                    }
 
-                     return sum;
+                    return sum;
                 })
                 .reduce(0, Integer::sum);
+    }
+
+    public int calculateTotalCardsWon(Map<Integer, Integer> winningNumbersByCard) {
+        Map<Integer, Integer> totalCardsWonByCardNumber = winningNumbersByCard.keySet().stream()
+                .collect(Collectors.toMap(cardNumber -> cardNumber, cardNumber -> 1));
+
+        for (int cardNumber : winningNumbersByCard.keySet()) {
+            totalCardsWonByCardNumber = calculateTotalScratchCardsWon(cardNumber, winningNumbersByCard, totalCardsWonByCardNumber);
+        }
+
+        System.out.println("Final: " + totalCardsWonByCardNumber);
+        return totalCardsWonByCardNumber.values().stream().reduce(0, Integer::sum);
+    }
+
+    private Map<Integer, Integer> calculateWinningNumbersByCard(List<CardResult> cardResults) {
+        Map<Integer, Integer> cardResultMap = new HashMap<>();
+        for (int i=0; i<cardResults.size(); i++) {
+            CardResult cardResult = cardResults.get(i);
+            long totalWinningNumbers = cardResult.actualNumbers
+                    .stream()
+                    .filter(cardResult.winningNumbers::contains)
+                    .count();
+            cardResultMap.put(i + 1, (int) totalWinningNumbers);
+        }
+        return cardResultMap;
+    }
+
+    private Map<Integer, Integer> calculateTotalScratchCardsWon(int startingCardNumber, Map<Integer, Integer> winningNumbersByCardMap, Map<Integer, Integer> totalCardsWonByCardNumber) {
+        int totalWinningNumbers = winningNumbersByCardMap.get(startingCardNumber);
+        for (int i=1; i<=totalWinningNumbers; i++) {
+            int nextCard = startingCardNumber + i;
+            totalCardsWonByCardNumber.compute(nextCard, (k, previousValue) -> previousValue + 1);
+
+            totalCardsWonByCardNumber = calculateTotalScratchCardsWon(nextCard, winningNumbersByCardMap, totalCardsWonByCardNumber);
+        }
+
+        return totalCardsWonByCardNumber;
     }
 
     record CardResult(Collection<Integer> winningNumbers, Collection<Integer> actualNumbers) {
@@ -66,8 +100,14 @@ public class Day4 {
         List<CardResult> results = day.precompute(
                 "day4_input.txt"
         );
-        int result = day.calculateMatchingNumbersSum(results);
+        Map<Integer, Integer> winningNumbersByCard = day.calculateWinningNumbersByCard(results);
+        int result = day.calculateSumOfTotalNumbersMatched(winningNumbersByCard);
 
+        //Scratch: 13, Day4: 24733
         System.out.println("Card Point Value: " + result);
+
+        //Scratch: 30, Day4:
+        int totalCardsWon = day.calculateTotalCardsWon(winningNumbersByCard);
+        System.out.println("Total Cards Won: " + totalCardsWon);
     }
 }
