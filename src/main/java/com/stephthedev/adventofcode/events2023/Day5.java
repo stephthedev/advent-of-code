@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 public class Day5 {
@@ -76,8 +78,8 @@ public class Day5 {
         );
     }
 
-    public long findLowestLocation(Almanac almanac) {
-        Map<Long, Long> seedToLocationMap = almanac.seeds.stream()
+    public long findLowestLocation(Collection<Long> seeds, Almanac almanac) {
+        Map<Long, Long> seedToLocationMap = seeds.stream()
                 .collect(Collectors.toMap(
                         seed -> seed,
                         seed -> almanac.seedToSoilRange.stream()
@@ -87,7 +89,7 @@ public class Day5 {
                                 .findFirst()
                                 .orElse(seed)  //seed-soil
                 ))
-                .entrySet()
+                /*.entrySet()
                 .stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
@@ -152,7 +154,7 @@ public class Day5 {
                                 .map(Optional::get)
                                 .findFirst()
                                 .orElse(seedHumidityEntry.getValue())  //seed-humidity
-                ));
+                ))*/;
         System.out.println("SEED-LOCATION: " + seedToLocationMap);
         return seedToLocationMap.values()
                 .stream()
@@ -162,7 +164,7 @@ public class Day5 {
 
     }
 
-    record Almanac(Collection<Long> seeds,
+    record Almanac(List<Long> seeds,
                    Collection<AlmanacLine> seedToSoilRange,
                    Collection<AlmanacLine> soilToFertilizerRange,
                    Collection<AlmanacLine> fertilizerToWaterRange,
@@ -217,7 +219,35 @@ public class Day5 {
     public static void main(String[] args) throws IOException {
         Day5 day5 = new Day5();
         Almanac almanac = day5.precompute("aoc2023/day5_input.txt");
+
+        long part1Lowest = day5.findLowestLocation(almanac.seeds, almanac);
         //Scratch: 35, Day5: 282277027
-        System.out.println("LOWEST LOCATION: " + day5.findLowestLocation(almanac));
+        System.out.println("Part 1 Lowest Location: " + part1Lowest);
+
+        long previousSeedStart = 0;
+        long maxBatchSize = 1000;
+        List<Long> lowestLocations = new ArrayList<>();
+        for (int i=0; i<almanac.seeds.size(); i++) {
+            if (i % 2 == 0) {
+                previousSeedStart = almanac.seeds.get(i);
+            } else {
+                long range = almanac.seeds.get(i);
+                int totalBatches = (int) (range / maxBatchSize);
+                
+                
+                kdk
+                
+                long lowestLocation = IntStream.rangeClosed(1, totalBatches)
+                        .mapToLong(batch -> {
+                            long upperRange = previousSeedStart + (batch * maxBatchSize);
+                        })
+                        .min();
+//                long lowestLocation = day5.findLowestLocation(Collections.emptyList(), almanac);
+//                lowestLocations.add(lowestLocation);
+
+            }
+        }
+        long part2Lowest = lowestLocations.stream().mapToLong(v -> v).min().orElse(Long.MIN_VALUE);
+        System.out.println("Part 2 Lowest Location: " + part2Lowest);
     }
 }
