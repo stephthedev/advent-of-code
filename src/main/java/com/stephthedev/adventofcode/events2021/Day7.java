@@ -1,10 +1,8 @@
-package com.stephthedev.aoc;
+package com.stephthedev.adventofcode.events2021;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * https://adventofcode.com/2021/day/7
