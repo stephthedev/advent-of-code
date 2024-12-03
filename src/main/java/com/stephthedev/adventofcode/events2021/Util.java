@@ -1,4 +1,4 @@
-package com.stephthedev.aoc;
+package com.stephthedev.adventofcode.events2021;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
