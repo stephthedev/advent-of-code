@@ -4,6 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 
 public class Day1 {
 
@@ -20,22 +25,31 @@ public class Day1 {
             }
         }
 
+        Collections.sort(list1);
+        Collections.sort(list2);
+
         return new LocationList(list1, list2);
     }
 
     public int findTotalDistance(LocationList locations) {
-        List<Integer> list1Sorted = locations.list1.stream().sorted().toList();
-        List<Integer> list2Sorted = locations.list2.stream().sorted().toList();
-
         int totalDistance = 0;
-        for (int i=0; i<list1Sorted.size(); i++) {
-            int location1 = list1Sorted.get(i);
-            int location2 = list2Sorted.get(i);
+        for (int i=0; i<locations.list1.size(); i++) {
+            int location1 = locations.list1.get(i);
+            int location2 = locations.list2.get(i);
 
             totalDistance += Math.abs(location1 - location2);
         }
 
         return totalDistance;
+    }
+
+    public long findSimilarityScore(LocationList locations) {
+        Map<Integer, Long> locationCountById = locations.list2.stream()
+                .collect(groupingBy(Function.identity(), counting()));
+
+        return locations.list1.stream()
+                .map(locationId -> locationId * locationCountById.getOrDefault(locationId, 0L))
+                .reduce(0L, Long::sum);
     }
 
     record LocationList(List<Integer> list1, List<Integer> list2) {
@@ -46,5 +60,8 @@ public class Day1 {
         LocationList locationList = day1.precompute("2024/day1_input.txt");
         int totalDistance = day1.findTotalDistance(locationList);
         System.out.println("Day 1 Total Distance: " + totalDistance);
+
+        long similarityScore = day1.findSimilarityScore(locationList);
+        System.out.println("Day 2 Similarity Score: " + similarityScore);
     }
 }
