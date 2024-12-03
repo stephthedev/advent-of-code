@@ -157,7 +157,7 @@ public class Day3 {
     public static void main(String[] args) throws IOException {
         Day3 day3 = new Day3();
         List<LineResult> lineResults = day3.precompute(
-                "aoc2023/day3_input.txt"
+                "2023/day3_input.txt"
         );
         Result result = day3.sumRelevantPartNumbers(lineResults);
         //Scratch: 4361, 467835
