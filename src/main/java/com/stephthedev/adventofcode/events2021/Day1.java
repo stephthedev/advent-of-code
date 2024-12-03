@@ -1,4 +1,4 @@
-package com.stephthedev.aoc;
+package com.stephthedev.adventofcode.events2021;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class Day1 {
 
     public static void main(String[] args) throws IOException {
         Day1 day = new Day1();
-        long[] solution = day.run("src/main/resources/day1_input.txt");
+        long[] solution = day.run("src/main/resources/aoc2021/day1_input.txt");
         System.out.println(Arrays.toString(solution));
     }
 }
