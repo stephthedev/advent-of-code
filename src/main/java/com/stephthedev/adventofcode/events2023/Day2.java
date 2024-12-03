@@ -105,7 +105,7 @@ public class Day2 {
     public static void main(String[] args) throws IOException {
         Day2 day2 = new Day2();
         day2.calculate(
-                "aoc2023/day2_input.txt",
+                "2023/day2_input.txt",
                 Map.of(
                         "red", 12,
                         "green", 13,

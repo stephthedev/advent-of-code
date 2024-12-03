@@ -79,7 +79,7 @@ public class Day1 {
 
     public static void main(String[] args) throws IOException {
         Day1 day1 = new Day1();
-        int result = day1.calculate("aoc2023/day1_input.txt");
+        int result = day1.calculate("2023/day1_input.txt");
         System.out.println("Result: " + result);
     }
 }

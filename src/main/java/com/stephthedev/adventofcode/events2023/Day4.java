@@ -98,7 +98,7 @@ public class Day4 {
     public static void main(String[] args) throws IOException {
         Day4 day = new Day4();
         List<CardResult> results = day.precompute(
-                "aoc2023/day4_input.txt"
+                "2023/day4_input.txt"
         );
         Map<Integer, Integer> winningNumbersByCard = day.calculateWinningNumbersByCard(results);
         int result = day.calculateSumOfTotalNumbersMatched(winningNumbersByCard);
