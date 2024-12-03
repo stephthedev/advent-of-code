@@ -169,7 +169,7 @@ public class Day4 {
 
     public static void main(String[] args) throws IOException {
         Day4 day = new Day4();
-        long[] solution = day.run("src/main/resources/day4_input.txt");
+        long[] solution = day.run("src/main/resources/aoc2021/day4_input.txt");
         System.out.println(Arrays.toString(solution));
     }
 }

@@ -100,7 +100,7 @@ public class Day7 {
 
     public static void main(String[] args) throws IOException {
         Day7 day = new Day7();
-        long[] solution = day.run("src/main/resources/day7_input.txt");
+        long[] solution = day.run("src/main/resources/aoc2021/day7_input.txt");
         System.out.println(Arrays.toString(solution));
     }
 }

@@ -63,7 +63,7 @@ public class Day6 {
 
     public static void main(String[] args) throws IOException {
         Day6 day = new Day6();
-        long[] solution = day.run("src/main/resources/day6_input.txt");
+        long[] solution = day.run("src/main/resources/aoc2021/day6_input.txt");
         System.out.println(Arrays.toString(solution));
     }
 }
