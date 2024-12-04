@@ -38,7 +38,12 @@ public class Day2Test {
                 new Tuple(List.of(1, 2, 3, 4, 3), List.of(1, 2, 3, 4)),
                 new Tuple(List.of(9, 8, 7, 6, 7), List.of(9, 8, 7, 6)),
                 new Tuple(List.of(7, 10, 8, 10, 11), List.of(7, 8, 10, 11)),
-                new Tuple(List.of(29, 28, 27, 25, 26, 25, 22, 20), List.of(29, 28, 27, 26, 25, 22, 20))
+                new Tuple(List.of(11, 8, 10, 8, 7), List.of(11, 10, 8, 7)),
+                new Tuple(List.of(29, 28, 27, 25, 26, 25, 22, 20), List.of(29, 28, 27, 26, 25, 22, 20)),
+
+                //Found 5 discrepancies
+                new Tuple(List.of(15, 16, 18, 22, 19), List.of(15, 16, 18, 19)),
+                new Tuple(List.of(40, 39, 38, 36, 38, 33), List.of(40, 39, 38, 36, 33))
         );
     }
 }
