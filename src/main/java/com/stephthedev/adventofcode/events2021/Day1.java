@@ -1,5 +1,7 @@
 package com.stephthedev.adventofcode.events2021;
 
+import com.stephthedev.adventofcode.utils.FileParserUtil;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
@@ -9,7 +11,7 @@ import java.util.stream.Collectors;
 public class Day1 {
 
     private List<Long> ingest(String fileName) throws FileNotFoundException, IOException {
-        List<String> lines = Util.parseFileAsStringArray(fileName);
+        List<String> lines = FileParserUtil.parseFileAsStringList(fileName);
         if (lines == null || lines.size() == 0) {
             System.err.println("Failed to read any lines");
         }

@@ -1,5 +1,7 @@
 package com.stephthedev.adventofcode.events2021;
 
+import com.stephthedev.adventofcode.utils.FileParserUtil;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ import java.util.List;
 public class Day9 {
 
     private int[][] ingest(String fileName) throws IOException {
-        List<String> lines = Util.parseFileAsStringArray(fileName);
+        List<String> lines = FileParserUtil.parseFileAsStringList(fileName);
         int[][] lavaFlow = new int[lines.size()][lines.get(0).length()];
         int count = 0;
         for (String line : lines) {

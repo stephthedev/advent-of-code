@@ -1,5 +1,7 @@
 package com.stephthedev.adventofcode.events2021;
 
+import com.stephthedev.adventofcode.utils.FileParserUtil;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
@@ -105,7 +107,7 @@ public class Day3 {
     }
 
     public long[] run(String fileName) throws FileNotFoundException, IOException {
-        List<String> binaryNumbers = Util.parseFileAsStringArray(fileName);
+        List<String> binaryNumbers = FileParserUtil.parseFileAsStringList(fileName);
         int part1 = processPowerConsumption(binaryNumbers);
         int part2 = processLifeSupportRating(binaryNumbers);
         return new long[] {part1, part2};

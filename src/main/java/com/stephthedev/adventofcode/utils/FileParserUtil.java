@@ -1,4 +1,4 @@
-package com.stephthedev.adventofcode.events2021;
+package com.stephthedev.adventofcode.utils;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Util {
+public class FileParserUtil {
 
-    public static final List<String> parseFileAsStringArray(String fileName) throws FileNotFoundException, IOException {
+    public static final List<String> parseFileAsStringList(String fileName) throws FileNotFoundException, IOException {
         List<String> lines = new ArrayList<String>();
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line = null;

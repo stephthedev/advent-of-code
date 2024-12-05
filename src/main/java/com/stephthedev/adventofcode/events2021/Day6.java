@@ -1,5 +1,7 @@
 package com.stephthedev.adventofcode.events2021;
 
+import com.stephthedev.adventofcode.utils.FileParserUtil;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,7 +12,7 @@ import java.util.List;
 public class Day6 {
 
     private List<Integer> ingest(String fileName) throws IOException {
-        List<String> data = Util.parseFileAsStringArray(fileName);
+        List<String> data = FileParserUtil.parseFileAsStringList(fileName);
         String[] school = data.get(0).split(",");
         List<Integer> numbers = new ArrayList<>(school.length);
         for (String fish : school) {

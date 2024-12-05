@@ -1,5 +1,7 @@
 package com.stephthedev.adventofcode.events2021;
 
+import com.stephthedev.adventofcode.utils.FileParserUtil;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
@@ -12,7 +14,7 @@ public class Day7 {
     private Map<Integer, Integer> summationMemo = new HashMap<>();
 
     public List<Integer> ingest(String fileName) throws FileNotFoundException, IOException {
-        List<String> linesData = Util.parseFileAsStringArray(fileName);
+        List<String> linesData = FileParserUtil.parseFileAsStringList(fileName);
         String[] numbersArr = linesData.get(0).split(",");
         List<Integer> numbers = new ArrayList<>(numbersArr.length);
         for (String numberStr : numbersArr) {
