@@ -1,5 +1,7 @@
 package com.stephthedev.adventofcode.events2021;
 
+import com.stephthedev.adventofcode.utils.FileParserUtil;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ import java.util.List;
 public class Day2 {
 
     private List<Instruction> ingest(String fileName) throws FileNotFoundException, IOException {
-        List<String> movements = Util.parseFileAsStringArray(fileName);
+        List<String> movements = FileParserUtil.parseFileAsStringList(fileName);
         List<Instruction> instructions = new ArrayList<>();
         for (String movement : movements) {
             String[] commandUnitArr = movement.split(" ");

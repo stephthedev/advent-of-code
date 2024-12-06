@@ -1,5 +1,7 @@
 package com.stephthedev.adventofcode.events2021;
 
+import com.stephthedev.adventofcode.utils.FileParserUtil;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,7 +12,7 @@ import java.util.Objects;
 public class Day5 {
 
     public List<Line> parseData(String fileName) throws FileNotFoundException, IOException {
-        List<String> linesData = Util.parseFileAsStringArray(fileName);
+        List<String> linesData = FileParserUtil.parseFileAsStringList(fileName);
         List<Line> lines = new ArrayList<>(linesData.size());
         for (String line : linesData) {
             String[] coordPairStrArr = line.split("->");

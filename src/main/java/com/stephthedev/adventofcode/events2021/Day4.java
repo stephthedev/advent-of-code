@@ -1,5 +1,7 @@
 package com.stephthedev.adventofcode.events2021;
 
+import com.stephthedev.adventofcode.utils.FileParserUtil;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ import java.util.List;
 public class Day4 {
 
     private BingoData getData(String fileName) throws FileNotFoundException, IOException {
-        List<String> lines = Util.parseFileAsStringArray(fileName);
+        List<String> lines = FileParserUtil.parseFileAsStringList(fileName);
 
         //1. Construct an int[] of the called numbers from the first line
         String[] calledNumbersStrArr = lines.get(0).trim().split(",");
