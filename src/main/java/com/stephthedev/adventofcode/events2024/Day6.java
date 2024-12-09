@@ -12,7 +12,7 @@ public class Day6 {
         for (int row = 0; row<grid.length; row++) {
             for (int col = 0; col<grid[row].length; col++) {
                 if (grid[row][col] == '^') {
-                    moveToNextSpot(grid, row, col, Direction.NORTH, visited);
+                    moveToNextSpot(grid, new Position(row, col), Direction.NORTH, visited);
                 }
             }
         }
@@ -27,32 +27,41 @@ public class Day6 {
         return totalVisited;
     }
 
-    private boolean moveToNextSpot(char[][] grid, int row, int col, Direction direction, boolean[][] visited) {
-        if (row < 0 || row >= grid.length) {
+    private boolean moveToNextSpot(char[][] grid, Position currentPosition, Direction direction, boolean[][] visited) {
+        if (currentPosition.row < 0 || currentPosition.row >= grid.length) {
             return false;
-        } else if (col < 0 || col >= grid[row].length) {
+        } else if (currentPosition.col < 0 || currentPosition.col >= grid[currentPosition.row].length) {
             return false;
         }
 
-        System.out.printf("(%d, %d) => %s \n", row, col, grid[row][col]);
-        visited[row][col] = true;
-        Direction nextDirection = getNextDirection(grid, row, col, direction);
-        if (nextDirection == Direction.NORTH) {
-            return moveToNextSpot(grid, row - 1, col, nextDirection, visited);
-        } else if (nextDirection == Direction.EAST) {
-            return moveToNextSpot(grid, row, col + 1, nextDirection, visited);
-        } else if (nextDirection == Direction.SOUTH) {
-            return moveToNextSpot(grid, row + 1, col, nextDirection, visited);
-        } else if (nextDirection == Direction.WEST) {
-            return moveToNextSpot(grid, row, col - 1, nextDirection, visited);
-        } else {
-            throw new IllegalStateException("This shouldn't happen");
-        }
+        //System.out.printf("(%d, %d) => %s \n", row, col, grid[row][col]);
+        visited[currentPosition.row][currentPosition.col] = true;
+        Direction nextDirection = isNextPositionBlocked(
+                grid,
+                currentPosition,
+                direction
+        ) ? direction.turnRight() : direction;
+
+        return moveToNextSpot(
+                grid,
+                getNextPosition(currentPosition, nextDirection),
+                nextDirection,
+                visited
+        );
     }
 
-    Direction getNextDirection(char[][] grid, int row, int col, Direction direction) {
-        int nextRow = row;
-        int nextCol = col;
+    boolean isNextPositionBlocked(char[][] grid, Position currentPosition, Direction direction) {
+        Position nextPosition = getNextPosition(currentPosition, direction);
+        if (nextPosition.row < 0 || nextPosition.row >= grid.length) {
+            return false;
+        } else if (nextPosition.col < 0 || nextPosition.col >= grid[0].length) {
+            return false;
+        } else return grid[nextPosition.row][nextPosition.col] == '#';
+    }
+
+    Position getNextPosition(Position currentPosition, Direction direction) {
+        int nextRow = currentPosition.row;
+        int nextCol = currentPosition.col;
         switch(direction) {
             case NORTH:
                 nextRow -= 1;
@@ -67,25 +76,24 @@ public class Day6 {
                 nextCol -= 1;
                 break;
         }
+        return new Position(nextRow, nextCol);
+    }
 
-        if (nextRow < 0 || nextRow >= grid.length) {
-            return direction;
-        } else if (nextCol < 0 || nextCol >= grid[0].length) {
-            return direction;
-        } else if (grid[nextRow][nextCol] == '#') {
-            return switch(direction) {
+    record Position(int row, int col) {
+
+    }
+
+    enum Direction  {
+        NORTH, EAST, SOUTH, WEST;
+
+        Direction turnRight() {
+            return switch(this) {
                 case NORTH -> Direction.EAST;
                 case EAST -> Direction.SOUTH;
                 case SOUTH -> Direction.WEST;
                 case WEST -> Direction.NORTH;
             };
         }
-
-        return direction;
-    }
-
-    enum Direction  {
-        NORTH, EAST, SOUTH, WEST
     }
 
     public static void main(String[] args) throws IOException {
@@ -93,6 +101,6 @@ public class Day6 {
         Day6 day6 = new Day6();
 
         int distinctGridCount = day6.part1(grid);
-        System.out.println("GRID: " + distinctGridCount);
+        System.out.println("Part 1: " + distinctGridCount);
     }
 }
