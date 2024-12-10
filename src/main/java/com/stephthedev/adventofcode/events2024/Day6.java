@@ -34,24 +34,17 @@ public class Day6 {
             return false;
         }
 
-        //System.out.printf("(%d, %d) => %s \n", row, col, grid[row][col]);
         visited[currentPosition.row][currentPosition.col] = true;
-        Direction nextDirection = isNextPositionBlocked(
-                grid,
-                currentPosition,
-                direction
-        ) ? direction.turnRight() : direction;
-
-        return moveToNextSpot(
-                grid,
-                getNextPosition(currentPosition, nextDirection),
-                nextDirection,
-                visited
-        );
+        Position nextPosition = currentPosition.getNextPosition(direction);
+        if (isNextPositionBlocked(grid, nextPosition)) {
+            nextPosition = currentPosition.getNextPosition(direction.turnRight());
+            return moveToNextSpot(grid, nextPosition, direction.turnRight(), visited);
+        } else {
+            return moveToNextSpot(grid, nextPosition, direction, visited);
+        }
     }
 
-    boolean isNextPositionBlocked(char[][] grid, Position currentPosition, Direction direction) {
-        Position nextPosition = getNextPosition(currentPosition, direction);
+    boolean isNextPositionBlocked(char[][] grid, Position nextPosition) {
         if (nextPosition.row < 0 || nextPosition.row >= grid.length) {
             return false;
         } else if (nextPosition.col < 0 || nextPosition.col >= grid[0].length) {
@@ -59,28 +52,27 @@ public class Day6 {
         } else return grid[nextPosition.row][nextPosition.col] == '#';
     }
 
-    Position getNextPosition(Position currentPosition, Direction direction) {
-        int nextRow = currentPosition.row;
-        int nextCol = currentPosition.col;
-        switch(direction) {
-            case NORTH:
-                nextRow -= 1;
-                break;
-            case EAST:
-                nextCol += 1;
-                break;
-            case SOUTH:
-                nextRow += 1;
-                break;
-            case WEST:
-                nextCol -= 1;
-                break;
-        }
-        return new Position(nextRow, nextCol);
-    }
-
     record Position(int row, int col) {
+        Position getNextPosition(Direction direction) {
+            int nextRow = row;
+            int nextCol = col;
 
+            switch(direction) {
+                case NORTH:
+                    nextRow -= 1;
+                    break;
+                case EAST:
+                    nextCol += 1;
+                    break;
+                case SOUTH:
+                    nextRow += 1;
+                    break;
+                case WEST:
+                    nextCol -= 1;
+                    break;
+            }
+            return new Position(nextRow, nextCol);
+        }
     }
 
     enum Direction  {
