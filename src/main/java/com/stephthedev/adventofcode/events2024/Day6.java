@@ -44,12 +44,12 @@ public class Day6 {
         }
     }
 
-    boolean isNextPositionBlocked(char[][] grid, Position nextPosition) {
-        if (nextPosition.row < 0 || nextPosition.row >= grid.length) {
+    boolean isNextPositionBlocked(char[][] grid, Position position) {
+        if (position.row < 0 || position.row >= grid.length) {
             return false;
-        } else if (nextPosition.col < 0 || nextPosition.col >= grid[0].length) {
+        } else if (position.col < 0 || position.col >= grid[0].length) {
             return false;
-        } else return grid[nextPosition.row][nextPosition.col] == '#';
+        } else return grid[position.row][position.col] == '#';
     }
 
     record Position(int row, int col) {
