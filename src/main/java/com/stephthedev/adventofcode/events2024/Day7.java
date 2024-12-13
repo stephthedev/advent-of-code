@@ -81,7 +81,13 @@ public class Day7 {
         long operand = equation.operands.get(index + 1);
         if (isSolvableRecursive(equation, index + 1, currentResult + operand)) {
             return true;
-        } else return isSolvableRecursive(equation, index + 1, currentResult * operand);
+        } else if (isSolvableRecursive(equation, index + 1, currentResult * operand)) {
+            return true;
+        } else if (isSolvableRecursive(equation, index + 1, Long.parseLong(currentResult + "" + operand))) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     record Equation(Long result, List<Long> operands) {
@@ -90,7 +96,7 @@ public class Day7 {
 
     public static void main(String[] args) throws IOException {
         Day7 day7 = new Day7();
-        List<Equation> equations = day7.precompute("2024/day7_input.txt");
+        List<Equation> equations = day7.precompute("2024/scratch.txt");
         long result = day7.part1(equations);
         System.out.println("Part 1: " + result);
     }
